@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Manager</title>
+  <style>
+    body {
+      width: fit-content;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    button.button {
+      flex: 1;
+      padding: 16px 64px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button {
+      white-space: nowrap;
+    }
+    
+    #saveButton {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    #saveButton:hover {
+      background-color: #2563eb;
+    }
+    
+    #loadButton {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    #loadButton:hover {
+      background-color: #059669;
+    }
+    
+    #openButton {
+      background-color: #f59e0b;
+      color: white;
+    }
+    
+    #openButton:hover {
+      background-color: #d97706;
+    }
+    
+    #exportButton {
+      background-color: #6366f1;
+      color: white;
+    }
+
+    #exportButton:hover {
+      background-color: #4f46e5;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    #tabList {
+      margin-top: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .tab-item {
+      display: flex;
+      align-items: start;
+      gap: 8px;
+      padding: 12px;
+      margin-top: 8px;
+      background-color: #f3f4f6;
+      border-radius: 6px;
+      border-left: 3px solid #3b82f6;
+    }
+    
+    .tab-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #1f2937;
+    }
+    
+    .tab-url {
+      font-size: 12px;
+      color: #6b7280;
+      word-break: break-all;
+    }
+
+    .delButton {
+      padding: 8px;
+    }
+    
+    .message {
+      padding: 10px;
+      margin-top: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .message.success {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+    
+    .message.error {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="button-group">
+    <button id="saveButton" class="button">Save Tabs</button>
+    <button id="loadButton" class="button">Load Tabs</button>
+    <button id="openButton" class="button" disabled>Open Tabs</button>
+    <button id="exportButton" class="button">Export Tabs</button>
+  </div>
+  
+  <div id="messageContainer"></div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
