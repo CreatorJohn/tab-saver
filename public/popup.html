@@ -72,6 +72,55 @@
     #loadButton { color: #10b981; }
     #openButton { color: #f59e0b; }
     #exportButton { color: #6366f1; }
+    #importButton { color: #8b5cf6; }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background-color: var(--bg);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-inset);
+    }
+
+    .switch-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .switch {
+      width: 44px;
+      height: 24px;
+      background-color: var(--bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow-flat);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .switch.active {
+      box-shadow: var(--shadow-inset);
+    }
+
+    .switch-handle {
+      width: 16px;
+      height: 16px;
+      background-color: var(--text-secondary);
+      border-radius: 50%;
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      transition: var(--transition);
+    }
+
+    .switch.active .switch-handle {
+      left: 24px;
+      background-color: var(--accent);
+    }
     
     #tabList {
       margin-top: 24px;
@@ -159,13 +208,23 @@
   </style>
 </head>
 <body>
+  <div class="toggle-container">
+    <label class="switch-label">Merge with existing</label>
+    <div class="switch" id="mergeToggle">
+      <div class="switch-handle"></div>
+    </div>
+  </div>
+
   <div class="button-group">
     <button id="saveButton" class="button">Save Tabs</button>
     <button id="loadButton" class="button">Load Tabs</button>
     <button id="openButton" class="button" disabled>Open Tabs</button>
     <button id="exportButton" class="button">Export Tabs</button>
+    <button id="importButton" class="button">Import Tabs</button>
   </div>
   
+  <input type="file" id="fileInput" accept=".json" style="display: none;">
+
   <div id="messageContainer"></div>
   
   <script src="popup.js"></script>
