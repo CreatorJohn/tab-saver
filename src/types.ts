@@ -48,7 +48,19 @@ type FailedExportResponse = {
 
 type ExportResponse = SuccessExportResponse | FailedExportResponse
 
-type MessageResponse = SaveResponse | OpenResponse | LoadResponse | ExportResponse
+type SuccessImportResponse = {
+  success: true
+  count: number
+}
+
+type FailedImportResponse = {
+  success: false
+  message: string
+}
+
+type ImportResponse = SuccessImportResponse | FailedImportResponse
+
+type MessageResponse = SaveResponse | OpenResponse | LoadResponse | ExportResponse | ImportResponse
 
 type LoadTabsMessage = {
   action: "loadTabs"
@@ -68,4 +80,10 @@ type ExportTabsMessage = {
   action: "exportTabs"
 }
 
-type Message = LoadTabsMessage | SaveTabsMessage | OpenTabsMessage | ExportTabsMessage
+type ImportTabsMessage = {
+  action: "importTabs"
+  tabs: TabData[]
+  mode: "merge" | "overwrite"
+}
+
+type Message = LoadTabsMessage | SaveTabsMessage | OpenTabsMessage | ExportTabsMessage | ImportTabsMessage
