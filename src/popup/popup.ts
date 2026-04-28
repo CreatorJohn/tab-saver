@@ -1,4 +1,5 @@
 import { sendMessage } from "../helpers";
+import TabManager from "../services/tab_manager";
 
 // DOM elements
 const saveButton = document.getElementById('saveButton') as HTMLButtonElement;
@@ -26,9 +27,9 @@ function displayTabs(tabs: TabData[]) {
   tabList.innerHTML = "";
 
   if (tabs.length === 0) {
-    tabList.innerHTML = '<div class="empty-state">No saved tabs</div>';
+    tabList.innerHTML = '<div class="empty-state">Your dashboard is clear</div>';
     openButton.disabled = true;
-    document.body.appendChild(tabList);
+    if (!document.body.contains(tabList)) document.body.appendChild(tabList);
     return;
   }
   
@@ -53,7 +54,14 @@ function displayTabs(tabs: TabData[]) {
 
     const delButton = document.createElement("button");
     delButton.classList.add("delButton");
-    delButton.addEventListener("click", () => tabList.removeChild(item));
+    delButton.addEventListener("click", () => {
+      item.style.transform = "scale(0.95)";
+      item.style.opacity = "0";
+      setTimeout(() => {
+        if (tabList.contains(item)) tabList.removeChild(item);
+        if (tabList.children.length === 0) displayTabs([]);
+      }, 200);
+    });
 
     const delIcon = document.createElement("img");
     delIcon.src = "icons/trash-icon.svg";
@@ -88,17 +96,8 @@ saveButton.addEventListener('click', async () => {
     saveButton.disabled = true;
     hideTabs();
     
-    // Get all tabs in current window
-    const tabs = await chrome.tabs.query({ currentWindow: true });
-    
-    // Prepare payload
-    const tabData: TabData[] = tabs
-      .filter(tab => tab.id !== undefined && tab.url && tab.title)
-      .map(tab => ({
-        id: tab.id!,
-        title: tab.title!,
-        url: tab.url!
-      }));
+    // Get all tabs in current window using TabManager
+    const tabData = await TabManager.getCurrentTabs();
     
     // Send message to background script
     const response = await sendMessage<SaveTabsMessage, SaveResponse>({
