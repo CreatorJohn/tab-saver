@@ -1,38 +1,6 @@
 import "./hot-reload";
-import TabManager from "./tab_manager";
-
-const STORAGE_KEY = 'savedTabs';
-
-async function handleExportTabs(sendResponse: (response: ExportResponse) => void) {
-  try {
-    const result = await chrome.storage.local.get([STORAGE_KEY]);
-    const tabs = result[STORAGE_KEY] as TabData[] | undefined;
-
-    if (!tabs || tabs.length === 0) {
-      sendResponse({ success: false }); 
-      return;
-    }
-
-    const json = JSON.stringify(tabs, null, 2);
-    const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(json)}`;
-
-    chrome.downloads.download({
-      url: dataUrl,
-      filename: `tab-saver-export-${new Date().toISOString().split('T')[0]}.json`,
-      saveAs: true
-    }, () => {
-      if (chrome.runtime.lastError) {
-        console.error('Download error:', chrome.runtime.lastError);
-        sendResponse({ success: false });
-      } else {
-        sendResponse({ success: true });
-      }
-    });
-  } catch (error) {
-    console.error('Error exporting tabs:', error);
-    sendResponse({ success: false });
-  }
-}
+import TabManager from "../services/tab_manager";
+import StorageManager from "../services/storage_manager";
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener(
@@ -41,14 +9,24 @@ chrome.runtime.onMessage.addListener(
     sender: chrome.runtime.MessageSender,
     sendResponse: (response: MessageResponse) => void
   ) => {
-    if (message.action === 'exportTabs') {
-      handleExportTabs(sendResponse);
-      return true;
+    switch (message.action) {
+      case 'saveTabs':
+        StorageManager.handleSaveTabs(message.tabs, sendResponse);
+        break;
+      case 'loadTabs':
+        StorageManager.handleLoadTabs(sendResponse);
+        break;
+      case 'exportTabs':
+        StorageManager.handleExportTabs(sendResponse);
+        break;
+      case 'openTabs':
+        TabManager.handleOpenTabs(message.tabs, sendResponse);
+        break;
+      default:
+        return false;
     }
 
-    TabManager.handleAction(message, sendResponse);
-
-    return true
+    return true; // Keep channel open for async response
   }
 );
 
