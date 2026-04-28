@@ -19,6 +19,9 @@ chrome.runtime.onMessage.addListener(
       case 'exportTabs':
         StorageManager.handleExportTabs(sendResponse);
         break;
+      case 'importTabs':
+        StorageManager.handleImportTabs(message.tabs, message.mode, sendResponse);
+        break;
       case 'openTabs':
         TabManager.handleOpenTabs(message.tabs, sendResponse);
         break;

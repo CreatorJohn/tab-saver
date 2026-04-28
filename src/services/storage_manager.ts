@@ -82,12 +82,35 @@ export default class StorageManager {
     }
   }
 
-  // Placeholder for import logic
+  // Import tabs from external data
   static async handleImportTabs(
-    _tabs: TabData[],
-    sendResponse: (response: SaveResponse) => void
+    newTabs: TabData[],
+    mode: 'merge' | 'overwrite',
+    sendResponse: (response: ImportResponse) => void
   ) {
-    // To be implemented
-    sendResponse({ success: false, message: 'Import not yet implemented' });
+    try {
+      let finalTabs: TabData[] = [];
+
+      if (mode === 'overwrite') {
+        finalTabs = newTabs;
+      } else {
+        // Fetch existing
+        const result = await chrome.storage.local.get([this.STORAGE_KEY]);
+        const existingTabs = (result[this.STORAGE_KEY] as TabData[]) || [];
+
+        // Use Map for deduplication by URL (new tabs win)
+        const tabMap = new Map<string, TabData>();
+        existingTabs.forEach(t => tabMap.set(t.url, t));
+        newTabs.forEach(t => tabMap.set(t.url, t));
+
+        finalTabs = Array.from(tabMap.values());
+      }
+
+      await chrome.storage.local.set({ [this.STORAGE_KEY]: finalTabs });
+      sendResponse({ success: true, count: finalTabs.length });
+    } catch (error) {
+      console.error('Import error:', error);
+      sendResponse({ success: false, message: (error as Error).message });
+    }
   }
 }
