@@ -6,12 +6,16 @@ const saveButton = document.getElementById('saveButton') as HTMLButtonElement;
 const loadButton = document.getElementById('loadButton') as HTMLButtonElement;
 const openButton = document.getElementById('openButton') as HTMLButtonElement;
 const exportButton = document.getElementById('exportButton') as HTMLButtonElement;
+const mergeToggle = document.getElementById('mergeToggle') as HTMLDivElement;
+const importButton = document.getElementById('importButton') as HTMLButtonElement;
+const fileInput = document.getElementById('fileInput') as HTMLInputElement;
 const messageContainer = document.getElementById('messageContainer') as HTMLDivElement;
 const tabList = document.createElement("div")
 
 tabList.id = "tabList"
 
 let loadedTabs: TabData[] = [];
+let isMergeMode = false;
 
 // Show message to user
 function showMessage(text: string, type: 'success' | 'error') {
@@ -89,6 +93,50 @@ function escapeHtml(text: string): string {
   div.textContent = text;
   return div.innerHTML;
 }
+
+// Merge Toggle logic
+mergeToggle.addEventListener('click', () => {
+  isMergeMode = !isMergeMode;
+  mergeToggle.classList.toggle('active', isMergeMode);
+});
+
+// Import Button logic
+importButton.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', async (e) => {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      const content = event.target?.result as string;
+      const tabs = JSON.parse(content) as TabData[];
+
+      // Basic validation
+      if (!Array.isArray(tabs) || !tabs.every(t => t.url && t.title)) {
+        throw new Error('Invalid file format');
+      }
+
+      const response = await sendMessage<ImportTabsMessage, ImportResponse>({
+        action: 'importTabs',
+        tabs,
+        mode: isMergeMode ? 'merge' : 'overwrite'
+      });
+
+      if (response.success) {
+        showMessage(`Successfully imported ${response.count} tabs!`, 'success');
+      } else {
+        showMessage(response.message || 'Import failed', 'error');
+      }
+    } catch (err) {
+      showMessage('Error parsing file: ' + (err as Error).message, 'error');
+    } finally {
+      fileInput.value = ''; // Reset for next use
+    }
+  };
+  reader.readAsText(file);
+});
 
 // Save current tabs
 saveButton.addEventListener('click', async () => {
