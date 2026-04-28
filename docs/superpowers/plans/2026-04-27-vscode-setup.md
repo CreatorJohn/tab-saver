@@ -1,33 +1,32 @@
 # VS Code Setup Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Automate Chrome extension development workflow in VS Code with debugging, hot-reloading, and manifest/code linting.
+**Goal:** Automate extension dev in VS Code.
 
 **Architecture:** 
-1. Enable source maps in Webpack to link `dist/` JS to `src/` TS.
-2. Configure VS Code Launch to run Chrome with the extension auto-loaded.
-3. Use VS Code Settings for Manifest JSON Schema and auto-linting.
-4. Set up ESLint + Prettier for code quality.
-5. Add a minimal hot-reload helper to the background script.
+1. Source maps in Webpack.
+2. Launch config for Chrome with auto-load.
+3. VS Code Settings: JSON Schema + auto-fix.
+4. ESLint + Prettier.
+5. Hot-reload helper in background.
 
 **Tech Stack:** Webpack, TypeScript, ESLint, Prettier, VS Code Debugger.
 
 ---
 
-### Task 1: Enable Source Maps in Webpack
+### Task 1: Source Maps
 
 **Files:**
 - Modify: `webpack.config.cjs`
 
-- [ ] **Step 1: Update `webpack.config.cjs` to include `devtool`**
+- [ ] **Step 1: Update `webpack.config.cjs`**
 
 ```javascript
-// ... existing imports
 module.exports = {
-  mode: "development", // Change to development for better debugging
+  mode: "development",
   devtool: "inline-source-map",
-  // ... rest of config
+  // ...
 ```
 
 - [ ] **Step 2: Commit**
@@ -37,7 +36,7 @@ git add webpack.config.cjs
 git commit -m "chore: enable source maps and development mode in webpack"
 ```
 
-### Task 2: VS Code Debug & Launch Configuration
+### Task 2: Debug Config
 
 **Files:**
 - Create: `.vscode/launch.json`
@@ -72,12 +71,12 @@ git add .vscode/launch.json
 git commit -m "chore: add vscode launch configuration for chrome debugging"
 ```
 
-### Task 3: VS Code Settings & Manifest Intellisense
+### Task 3: Settings & Intellisense
 
 **Files:**
 - Create: `.vscode/settings.json`
 
-- [ ] **Step 1: Create `.vscode/settings.json` with JSON Schema and Auto-fix**
+- [ ] **Step 1: Create `.vscode/settings.json`**
 
 ```json
 {
@@ -104,14 +103,14 @@ git add .vscode/settings.json
 git commit -m "chore: add vscode settings for manifest intellisense and auto-fix"
 ```
 
-### Task 4: Install Linting Dependencies
+### Task 4: Linting Deps
 
 **Files:**
-- Modify: `package.json` (via command)
+- Modify: `package.json`
 
-- [ ] **Step 1: Install ESLint, Prettier, and plugins**
+- [ ] **Step 1: Install deps**
 
-Run: `npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-chrome-extension`
+Run: `bun add -d eslint prettier eslint-config-prettier eslint-plugin-prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-chrome-extension`
 
 - [ ] **Step 2: Commit**
 
@@ -120,11 +119,10 @@ git add package.json bun.lock
 git commit -m "chore: install linting and formatting dependencies"
 ```
 
-### Task 5: Configure ESLint and Prettier
+### Task 5: ESLint & Prettier Config
 
 **Files:**
-- Create: `.eslintrc.json`
-- Create: `.prettierrc`
+- Create: `.eslintrc.json`, `.prettierrc`
 
 - [ ] **Step 1: Create `.eslintrc.json`**
 
@@ -143,11 +141,7 @@ git commit -m "chore: install linting and formatting dependencies"
     "prettier/prettier": "error",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
   },
-  "env": {
-    "browser": true,
-    "webextensions": true,
-    "node": true
-  }
+  "env": { "browser": true, "webextensions": true, "node": true }
 }
 ```
 
@@ -170,17 +164,15 @@ git add .eslintrc.json .prettierrc
 git commit -m "chore: configure eslint and prettier"
 ```
 
-### Task 6: Implement Hot-Reload Helper
+### Task 6: Hot-Reload Helper
 
 **Files:**
 - Create: `src/background/hot-reload.ts`
 - Modify: `src/background/background.ts`
 
 - [ ] **Step 1: Create `src/background/hot-reload.ts`**
-This script checks for directory changes and reloads the extension.
 
 ```typescript
-// Simple hot-reload script
 const filesInDirectory = (dir: any) =>
   new Promise((resolve) =>
     dir.createReader().readEntries((entries: any) =>
@@ -204,7 +196,7 @@ const timestampForFilesInDirectory = (dir: any) =>
 const watchChanges = (dir: any, lastTimestamp?: string) => {
   timestampForFilesInDirectory(dir).then((timestamp) => {
     if (!lastTimestamp || lastTimestamp === timestamp) {
-      setTimeout(() => watchChanges(dir, timestamp), 1000); // retry after 1s
+      setTimeout(() => watchChanges(dir, timestamp), 1000);
     } else {
       chrome.runtime.reload();
     }
@@ -218,12 +210,10 @@ chrome.management.getSelf((self) => {
 });
 ```
 
-- [ ] **Step 2: Import hot-reload in `src/background/background.ts`**
+- [ ] **Step 2: Import hot-reload**
 
 ```typescript
 import "./hot-reload";
-import { sendNotification } from "../helpers";
-// ...
 ```
 
 - [ ] **Step 3: Commit**

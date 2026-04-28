@@ -1,26 +1,25 @@
-# Neumorphic Popup Redesign Implementation Plan
+# Neumorphic Popup Redesign Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Transform the extension popup into a modern Neumorphic interface.
+**Goal:** Popup to Neumorphic interface.
 
 **Architecture:**
-- Use CSS variables for consistent neumorphic shadows and colors.
-- Replace current flat buttons and cards with 3D-effect components.
-- Implement CSS transitions for tactile "pressing" feedback.
-- Update `popup.ts` to support the new UI structure and animations.
+- CSS vars for shadows/colors.
+- 3D effect buttons/cards.
+- Transitions for "pressing" feedback.
+- Update `popup.ts` UI logic.
 
-**Tech Stack:** HTML, CSS, TypeScript, Chrome Extensions API.
+**Tech Stack:** HTML, CSS, TypeScript.
 
 ---
 
-### Task 1: CSS Foundations & Global Styles
+### Task 1: CSS Foundations
 
 **Files:**
 - Modify: `public/popup.html`
 
-- [ ] **Step 1: Define Neumorphic Variables**
-Update the `<style>` block in `public/popup.html` to include the design tokens.
+- [ ] **Step 1: Define Variables**
 
 ```css
 :root {
@@ -39,8 +38,7 @@ Update the `<style>` block in `public/popup.html` to include the design tokens.
 }
 ```
 
-- [ ] **Step 2: Update Base Body Styles**
-Update the `body` style in `public/popup.html`.
+- [ ] **Step 2: Update Body**
 
 ```css
 body {
@@ -53,20 +51,19 @@ body {
 }
 ```
 
-- [ ] **Step 3: Commit Foundations**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add public/popup.html
 git commit -m "style: define neumorphic variables and base body styles"
 ```
 
-### Task 2: Neumorphic UI Components
+### Task 2: Neumorphic Components
 
 **Files:**
 - Modify: `public/popup.html`
 
-- [ ] **Step 1: Redesign Buttons**
-Replace current button styles in `public/popup.html` with neumorphic ones.
+- [ ] **Step 1: Buttons**
 
 ```css
 button.button {
@@ -86,26 +83,21 @@ button.button {
   transition: var(--transition);
   outline: none;
 }
-
 button.button:active {
   box-shadow: var(--shadow-pressed);
   transform: scale(0.98);
 }
-
 button.button:disabled {
   opacity: 0.4;
-  cursor: not-allowed;
   box-shadow: none;
 }
-
 #saveButton { color: var(--accent); }
 #loadButton { color: #10b981; }
 #openButton { color: #f59e0b; }
 #exportButton { color: #6366f1; }
 ```
 
-- [ ] **Step 2: Redesign Tab Cards**
-Update the tab item styles in `public/popup.html`.
+- [ ] **Step 2: Cards**
 
 ```css
 .tab-item {
@@ -117,85 +109,46 @@ Update the tab item styles in `public/popup.html`.
   background-color: var(--bg);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-flat);
-  border: none;
   transition: var(--transition);
 }
-
-.tab-title {
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 2px;
-}
-
-.tab-url {
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-
+.tab-title { font-weight: 600; margin-bottom: 2px; }
+.tab-url { font-size: 11px; color: var(--text-secondary); }
 .delButton {
-  background: none;
-  border: none;
-  padding: 8px;
-  border-radius: 50%;
+  background: none; border: none; padding: 8px; border-radius: 50%;
   box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
 }
-
-.delButton:active {
-  box-shadow: inset 2px 2px 4px var(--dark-shadow), inset -2px -2px 4px var(--light-shadow);
-}
+.delButton:active { box-shadow: inset 2px 2px 4px var(--dark-shadow); }
 ```
 
-- [ ] **Step 3: Update Scrollbar & Empty State**
-Add styles for custom scrollbar and empty state in `public/popup.html`.
+- [ ] **Step 3: List & Empty State**
 
 ```css
 #tabList {
-  margin-top: 24px;
-  max-height: 350px;
-  overflow-y: auto;
-  padding: 4px;
+  margin-top: 24px; max-height: 350px; overflow-y: auto; padding: 4px;
 }
-
-#tabList::-webkit-scrollbar {
-  width: 4px;
-}
-
-#tabList::-webkit-scrollbar-thumb {
-  background: var(--dark-shadow);
-  border-radius: 10px;
-}
-
+#tabList::-webkit-scrollbar { width: 4px; }
+#tabList::-webkit-scrollbar-thumb { background: var(--dark-shadow); border-radius: 10px; }
 .empty-state {
-  margin-top: 24px;
-  padding: 32px;
-  text-align: center;
-  color: var(--text-secondary);
-  box-shadow: var(--shadow-inset);
-  border-radius: var(--radius-main);
-  font-size: 13px;
+  margin-top: 24px; padding: 32px; text-align: center;
+  box-shadow: var(--shadow-inset); border-radius: var(--radius-main);
 }
 ```
 
-- [ ] **Step 4: Commit Component Styles**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add public/popup.html
-git commit -m "style: implement neumorphic buttons, cards, and list components"
+git commit -m "style: implement neumorphic components"
 ```
 
-### Task 3: Logic & Animation Integration
+### Task 3: Logic
 
 **Files:**
 - Modify: `src/popup/popup.ts`
 
-- [ ] **Step 1: Implement Delete Animation**
-Update `displayTabs` function in `src/popup/popup.ts` to add a "sink" effect when deleting.
+- [ ] **Step 1: Delete Animation**
 
 ```typescript
-// Replace part of displayTabs where delButton is created
 delButton.addEventListener("click", () => {
   item.style.transform = "scale(0.95)";
   item.style.opacity = "0";
@@ -206,8 +159,7 @@ delButton.addEventListener("click", () => {
 });
 ```
 
-- [ ] **Step 2: Update UI Logic for Empty State**
-Ensure `displayTabs` uses the new `empty-state` class correctly.
+- [ ] **Step 2: Empty State**
 
 ```typescript
 function displayTabs(tabs: TabData[]) {
@@ -218,17 +170,12 @@ function displayTabs(tabs: TabData[]) {
     if (!document.body.contains(tabList)) document.body.appendChild(tabList);
     return;
   }
-  // ... rest of implementation (rebuilding list)
 }
 ```
 
-- [ ] **Step 3: Verify Build**
-Run: `bun run build`
-Expected: Success.
-
-- [ ] **Step 4: Commit Logic Changes**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add src/popup/popup.ts
-git commit -m "feat: integrate neumorphic animations and update UI logic"
+git commit -m "feat: logic for neumorphic animations"
 ```
